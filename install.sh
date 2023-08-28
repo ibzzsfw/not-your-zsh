@@ -15,5 +15,6 @@ HOME_ZSH=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
 clone_if_not_exists "${CUSTOM_ZSH}/plugins/zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions"
 clone_if_not_exists "${CUSTOM_ZSH}/plugins/zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
 clone_if_not_exists "${HOME_ZSH}/themes/powerlevel10k" "https://github.com/romkatv/powerlevel10k.git"
+# add more plugins here ...
 
 zsh
