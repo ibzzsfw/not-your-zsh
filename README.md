@@ -3,7 +3,7 @@
 Run this first to change the permissions of the script
 
 ```
-# At this directory
+# At YOUR_PATH directory
 chmod +x ./install.sh
 ```
 
