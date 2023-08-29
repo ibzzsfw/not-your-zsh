@@ -114,6 +114,6 @@ source $ZSH/oh-my-zsh.sh
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Uncomment this section to allow POWERLEVEL9K_INSTANT_PROMPT
+# Uncomment this section to suppress POWERLEVEL9K_INSTANT_PROMPT
 # typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 # typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
