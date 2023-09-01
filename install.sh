@@ -56,6 +56,12 @@ function main {
     # change directory to ~
     cd ~
 
+    # if os legitable
+    if [[ "$OSTYPE" != "darwin"* ]] && [[ "$OSTYPE" != "linux-gnu"* ]]; then
+        echo "[ERR] Unsupported OS"
+        exit 1
+    fi
+
     # Check if zsh is installed
     if ! is_zsh_installed; then
         ask_install_zsh
