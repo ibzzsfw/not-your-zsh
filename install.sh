@@ -2,14 +2,21 @@
 CUSTOM_ZSH="${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
 HOME_ZSH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
+# log, recieve type and message
+function log_message {
+    local type=$1
+    local message=$2
+    echo "[$type] $(date): $message"
+}
+
 # Clone the repository if it does not exist in the directory
 function clone_if_not_exists {
     local dir=$1
     local repo_url=$2
     if [ -d "$dir" ]; then
-        echo "[WARN] $dir exists"
+        log_message "INF" "$dir exists"
     else
-        echo "[INF] Cloning for $dir"
+        log_message "INF" "Cloning for $dir"
         git clone $repo_url $dir
     fi
 }
@@ -17,34 +24,34 @@ function clone_if_not_exists {
 # Check if zsh is installed
 function is_zsh_installed {
     if [ -x "$(command -v zsh)" ]; then
-        echo "[INF] zsh is installed"
+        log_message "INF" "zsh is installed"
         return 0
     fi
-    echo "[ERR] zsh is not installed"
+    log_message "ERR" "zsh is not installed"
     return 1
 }
 
 # Ask the user if they want to install zsh
 function ask_install_zsh {
-    echo "[INF] Do you want to install zsh? (y/n)"
+    log_message "INF" "Do you want to install zsh? (y/n, Press Enter for Yes)"
     read -p "[INF] " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
         install_zsh
     else
-        echo "[INF] Skipping zsh installation"
+        log_message "INF" "Skipping zsh installation"
         exit 1
     fi
 }
 
 # Install zsh
 function install_zsh {
-    echo "[INF] Installing zsh"
+    log_message "INF" "Installing zsh"
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "[INF] macOS detected"
+        log_message "INF" "macOS detected"
         brew install zsh
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        echo "[INF] Linux detected"
+        log_message "INF" "linux detected"
         sudo apt install zsh
     fi
 }
@@ -57,7 +64,7 @@ function main {
 
     # if os legitable
     if [[ "$OSTYPE" != "darwin"* ]] && [[ "$OSTYPE" != "linux-gnu"* ]]; then
-        echo "[ERR] Unsupported OS"
+        log_message "ERR" "Unsupported OS"
         exit 1
     fi
 
@@ -65,8 +72,8 @@ function main {
     if ! is_zsh_installed; then
         ask_install_zsh
     else
-        echo "[INF] Proceeding with OSTYPE detection"
-        echo "[INF] OSTYPE was detected as $OSTYPE"
+        log_message "INF" "Proceeding with OSTYPE detection"
+        log_message "INF" "OSTYPE was detected as $OSTYPE"
     fi
 
     # Clone repositories
@@ -74,7 +81,7 @@ function main {
     clone_if_not_exists "${CUSTOM_ZSH}/plugins/zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
     clone_if_not_exists "${HOME_ZSH}/themes/powerlevel10k" "https://github.com/romkatv/powerlevel10k.git"
 
-    echo "[INF] Done"
+    log_message "INF" "Done"
     zsh
 }
 
