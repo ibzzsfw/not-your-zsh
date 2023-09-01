@@ -35,6 +35,7 @@ function is_zsh_installed {
 function ask_install_zsh {
     log_message "INF" "Do you want to install zsh? (y/n, Press Enter for Yes)"
     read -p "[INF] " -n 1 -r
+    echo
     if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
         install_zsh
     else
@@ -44,27 +45,15 @@ function ask_install_zsh {
 }
 
 # Install zsh
-function install_package_mac {
-    log_message "INF" "macOS: Installing $1"
-    brew install $1
-}
-
-function install_package_linux {
-    log_message "INF" "linux detected: Installing $1"
-    sudo apt install $1
-}
-
 function install_zsh {
-    local os=$(uname)
     log_message "INF" "Installing zsh"
-
-    if [[ "$os" == "Darwin" ]]; then
-        installer=install_package_mac
-    else
-        installer=install_package_linux
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        log_message "INF" "macOS detected"
+        brew install zsh
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        log_message "INF" "linux detected"
+        sudo apt install zsh
     fi
-
-    $installer zsh
 }
 
 # Main section of the script
