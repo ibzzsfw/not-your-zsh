@@ -5,15 +5,14 @@
 Run this first to change the permissions of the script
 
 ```
-# At YOUR_PATH directory
+# At this project directory
 chmod +x ./install.sh
 ```
 
 then run the script
 
 ```
-# At ~/
-./YOUR_PATH/install.sh
+./install.sh
 ```
 
 After you install `omz`, you can overwrite the default .zshrc file with this one.
