@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Define constants
 CUSTOM_ZSH="${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
 HOME_ZSH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
@@ -28,13 +26,14 @@ function is_zsh_installed {
 
 # Ask the user if they want to install zsh
 function ask_install_zsh {
-    echo "[INF] Do you want to install zsh? (Y/n)"
+    echo "[INF] Do you want to install zsh? (y/n)"
     read -p "[INF] " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         install_zsh
     else
         echo "[INF] Skipping zsh installation"
+        exit 1
     fi
 }
 
@@ -66,7 +65,7 @@ function main {
     if ! is_zsh_installed; then
         ask_install_zsh
     else
-        echo "[INF] zsh is installed, proceeding with OSTYPE detection"
+        echo "[INF] Proceeding with OSTYPE detection"
         echo "[INF] OSTYPE was detected as $OSTYPE"
     fi
 
