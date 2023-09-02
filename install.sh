@@ -9,6 +9,15 @@ function log_message {
     echo "[$type] $(date): $message"
 }
 
+function is_os_supported {
+    if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        log_message "INF" "OS is supported"
+        return 0
+    fi
+    log_message "ERR" "OS is not supported"
+    exit 1
+}
+
 # Clone the repository if it does not exist in the directory
 function clone_if_not_exists {
     local dir=$1
@@ -25,19 +34,21 @@ function clone_if_not_exists {
 function is_zsh_installed {
     if [ -x "$(command -v zsh)" ]; then
         log_message "INF" "zsh is installed"
+        log_message "INF" "Proceeding with OSTYPE detection"
+        log_message "INF" "OSTYPE was detected as $OSTYPE"
         return 0
     fi
     log_message "ERR" "zsh is not installed"
-    return 1
+    ask_install_zsh
 }
 
 # Ask the user if they want to install zsh
 function ask_install_zsh {
     log_message "INF" "Do you want to install zsh? (y/n, Press Enter for Yes)"
     read -p "[INF] " -n 1 -r
-    echo
     if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
         install_zsh
+        return 0
     else
         log_message "INF" "Skipping zsh installation"
         exit 1
@@ -46,7 +57,7 @@ function ask_install_zsh {
 
 # Install zsh
 function install_zsh {
-    log_message "INF" "Installing zsh"
+    log_message "INF" "Installing zsh ..."
     if [[ "$OSTYPE" == "darwin"* ]]; then
         log_message "INF" "macOS detected"
         brew install zsh
@@ -62,26 +73,25 @@ function main {
     # change directory to ~
     cd ~
 
-    # if os legitable
-    if [[ "$OSTYPE" != "darwin"* ]] && [[ "$OSTYPE" != "linux-gnu"* ]]; then
-        log_message "ERR" "Unsupported OS"
-        exit 1
-    fi
+    # os compatibility
+    is_os_supported
 
     # Check if zsh is installed
-    if ! is_zsh_installed; then
-        ask_install_zsh
-    else
-        log_message "INF" "Proceeding with OSTYPE detection"
-        log_message "INF" "OSTYPE was detected as $OSTYPE"
-    fi
+    is_zsh_installed
 
-    # Clone repositories
-    clone_if_not_exists "${CUSTOM_ZSH}/plugins/zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions"
-    clone_if_not_exists "${CUSTOM_ZSH}/plugins/zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
-    clone_if_not_exists "${HOME_ZSH}/themes/powerlevel10k" "https://github.com/romkatv/powerlevel10k.git"
+    local repos=(
+        "${CUSTOM_ZSH}/plugins/zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions"
+        "${CUSTOM_ZSH}/plugins/zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting.git"
+        "${HOME_ZSH}/themes/powerlevel10k https://github.com/romkatv/powerlevel10k.git"
+        # add more plugins here ...
+    )
 
-    log_message "INF" "Done"
+    for repo in "${repos[@]}"; do
+        IFS=" " read -r path url <<<"${repo}"
+        clone_if_not_exists "$path" "$url"
+    done
+
+    log_message "INF" "Restaring zsh ..."
     zsh
 }
 
