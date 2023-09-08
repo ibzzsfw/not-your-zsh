@@ -3,13 +3,13 @@ CUSTOM_ZSH="${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
 HOME_ZSH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 # log, recieve type and message
-function log_message {
+log_message() {
     local type=$1
     local message=$2
     echo "[$type] $(date): $message"
 }
 
-function is_os_supported {
+is_os_supported() {
     if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux-gnu"* ]]; then
         log_message "INF" "OS is supported"
         return 0
@@ -19,7 +19,7 @@ function is_os_supported {
 }
 
 # Clone the repository if it does not exist in the directory
-function clone_if_not_exists {
+clone_if_not_exists() {
     local dir=$1
     local repo_url=$2
     if [ -d "$dir" ]; then
@@ -31,7 +31,7 @@ function clone_if_not_exists {
 }
 
 # Check if zsh is installed
-function is_zsh_installed {
+is_zsh_installed() {
     if [ -x "$(command -v zsh)" ]; then
         log_message "INF" "zsh is installed"
         log_message "INF" "Proceeding with OSTYPE detection"
@@ -43,7 +43,7 @@ function is_zsh_installed {
 }
 
 # Ask the user if they want to install zsh
-function ask_install_zsh {
+ask_install_zsh() {
     log_message "INF" "Do you want to install zsh? (y/n, Press Enter for Yes)"
     read -p "[INF] " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
@@ -56,7 +56,7 @@ function ask_install_zsh {
 }
 
 # Install zsh
-function install_zsh {
+install_zsh() {
     log_message "INF" "Installing zsh ..."
     if [[ "$OSTYPE" == "darwin"* ]]; then
         log_message "INF" "macOS detected"
@@ -68,7 +68,7 @@ function install_zsh {
 }
 
 # Main section of the script
-function main {
+main() {
 
     # change directory to ~
     cd ~
