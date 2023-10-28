@@ -84,6 +84,25 @@ install_omz() {
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 }
 
+zshrc_exsits() {
+    if [ -f "$HOME/.zshrc" ]; then
+        _log "INF" "zshrc exists"
+        return 0
+    fi
+    _log "ERR" "zshrc does not exist"
+    return 1
+}
+
+ask_overwrite_zshrc() {
+    _log "INF" "Do you want to overwrite ~/.zshrc? (Y/n)"
+    read -p "[INF] " -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
+        overwrite_zshrc
+    else
+        _log "INF" "Skipping zshrc overwrite"
+    fi
+}
+
 overwrite_zshrc() {
     local dir=$1
     _log "INF" "Overwriting zshrc ..."
@@ -135,7 +154,12 @@ main() {
         install_omz
     fi
 
-    overwrite_zshrc
+    # Overwriting zshrc
+    if (zshrc_exsits); then
+        ask_overwrite_zshrc
+    else
+        overwrite_zshrc
+    fi
 
     # Installing plugins
     for repo in "${repos[@]}"; do
