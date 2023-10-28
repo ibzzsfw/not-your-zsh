@@ -1,62 +1,63 @@
+#!/bin/bash
+
 # Define constants
 CUSTOM_ZSH="${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
 HOME_ZSH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 # log, recieve type and message
-function log_message {
+log_message() {
     local type=$1
     local message=$2
     echo "[$type] $(date): $message"
 }
 
-function is_os_supported {
+is_os_supported() {
     if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux-gnu"* ]]; then
         log_message "INF" "OS is supported"
         return 0
     fi
     log_message "ERR" "OS is not supported"
-    exit 1
+    return 1
 }
 
 # Clone the repository if it does not exist in the directory
-function clone_if_not_exists {
+clone_if_not_exists() {
     local dir=$1
     local repo_url=$2
     if [ -d "$dir" ]; then
         log_message "INF" "$dir exists"
-    else
-        log_message "INF" "Cloning for $dir"
-        git clone $repo_url $dir
+        return 0
     fi
+    log_message "INF" "Cloning for $dir"
+    git clone $repo_url $dir
 }
 
 # Check if zsh is installed
-function is_zsh_installed {
+is_zsh_installed() {
+    ost=${OSTYPE:-unknown}
     if [ -x "$(command -v zsh)" ]; then
         log_message "INF" "zsh is installed"
         log_message "INF" "Proceeding with OSTYPE detection"
-        log_message "INF" "OSTYPE was detected as $OSTYPE"
+        log_message "INF" "OSTYPE was detected as $ost"
         return 0
     fi
-    log_message "ERR" "zsh is not installed"
-    ask_install_zsh
+    log_message "WARN" "zsh is not installed"
+    return 1
 }
 
 # Ask the user if they want to install zsh
-function ask_install_zsh {
-    log_message "INF" "Do you want to install zsh? (y/n, Press Enter for Yes)"
+ask_install_zsh() {
+    log_message "INF" "Do you want to install zsh? (Y/n))"
     read -p "[INF] " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
-        install_zsh
         return 0
-    else
-        log_message "INF" "Skipping zsh installation"
-        exit 1
     fi
+    log_message "INF" "Skipping zsh installation"
+    return 1
 }
 
 # Install zsh
-function install_zsh {
+install_zsh() {
     log_message "INF" "Installing zsh ..."
     if [[ "$OSTYPE" == "darwin"* ]]; then
         log_message "INF" "macOS detected"
@@ -67,18 +68,30 @@ function install_zsh {
     fi
 }
 
+is_omz_installed() {
+    if [ -d "$HOME/.oh-my-zsh" ]; then
+        log_message "INF" "oh-my-zsh is installed"
+        return 0
+    fi
+    log_message "ERR" "oh-my-zsh is not installed"
+    return 1
+}
+
+install_omz() {
+    log_message "INF" "Installing oh-my-zsh ..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+}
+
+overwrite_zshrc() {
+    local dir=$1
+    log_message "INF" "Overwriting zshrc ..."
+    cp "$dir/.zshrc" "$HOME/.zshrc"
+}
+
 # Main section of the script
-function main {
+main() {
 
-    # change directory to ~
-    cd ~
-
-    # os compatibility
-    is_os_supported
-
-    # Check if zsh is installed
-    is_zsh_installed
-
+    local dir=$(pwd)
     local repos=(
         "${CUSTOM_ZSH}/plugins/zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions"
         "${CUSTOM_ZSH}/plugins/zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting.git"
@@ -86,10 +99,35 @@ function main {
         # add more plugins here ...
     )
 
+    # change directory to ~
+    cd ~
+
+    # os compatibility
+    if (! is_os_supported); then
+        exit 1
+    fi
+
+    # Installing zsh
+    if (! is_zsh_installed); then
+        if (! ask_install_zsh); then
+            exit 1
+        fi
+        install_zsh
+    fi
+
+    # Installing oh-my-zsh
+    if (! is_omz_installed); then
+        install_omz
+    fi
+
+    # Installing plugins
     for repo in "${repos[@]}"; do
         IFS=" " read -r path url <<<"${repo}"
         clone_if_not_exists "$path" "$url"
     done
+
+    # Overwriting zshrc
+    overwrite_zshrc "$dir"
 
     log_message "INF" "Restaring zsh ..."
     zsh
