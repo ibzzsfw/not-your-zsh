@@ -88,15 +88,26 @@ overwrite_zshrc() {
     cp "$dir/.zshrc" "$HOME/.zshrc"
 }
 
+add_plugins() {
+    local name=$1
+    if [ -z "$(grep "$name" "$HOME/.zshrc")" ]; then
+        log_message "INF" "Adding $name to ~/.zshrc"
+        sed -i -e "/^plugins=(/a$name" "$HOME/.zshrc"
+    else
+        log_message "INF" "$name already exists in ~/.zshrc"
+    fi
+}
+
 # Main section of the script
 main() {
 
     local dir=$(pwd)
     local repos=(
-        "${CUSTOM_ZSH}/plugins/zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions"
-        "${CUSTOM_ZSH}/plugins/zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting.git"
-        "${HOME_ZSH}/themes/powerlevel10k https://github.com/romkatv/powerlevel10k.git"
+        "zsh-autosuggestions ${CUSTOM_ZSH}/plugins/zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions"
+        "zsh-syntax-highlighting ${CUSTOM_ZSH}/plugins/zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting.git"
+        "powerlevel10k ${HOME_ZSH}/themes/powerlevel10k https://github.com/romkatv/powerlevel10k.git"
         # add more plugins here ...
+        # format: "name path git_url"
     )
 
     # change directory to ~
@@ -120,17 +131,20 @@ main() {
         install_omz
     fi
 
-    # Installing plugins
-    for repo in "${repos[@]}"; do
-        IFS=" " read -r path url <<<"${repo}"
-        clone_if_not_exists "$path" "$url"
-    done
-
-    # Overwriting zshrc
     overwrite_zshrc "$dir"
 
+    # Installing plugins
+    for repo in "${repos[@]}"; do
+        IFS=" " read -r name path url <<<"${repo}"
+        clone_if_not_exists "$path" "$url"
+        # if path is /theme/ then not a plugin
+        if [[ "$path" != *"/themes/"* ]]; then
+            add_plugins "$name"
+        fi
+    done
+
     log_message "INF" "Restaring zsh ..."
-    source ~/.zshrc
+    zsh
 }
 
 # Call the main function
