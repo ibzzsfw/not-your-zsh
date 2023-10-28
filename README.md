@@ -15,8 +15,4 @@ then run the script
 ./install.sh
 ```
 
-After you install `omz`, you can overwrite the default .zshrc file with this one.
-<br />
-Path of the installation shell should be correctly related to the `~` directory.
-
-> easy ?
+> Note: Up to this version, if you skip the overwrite process, you need to manually handle theme installation.
