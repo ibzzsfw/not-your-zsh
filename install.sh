@@ -3,12 +3,14 @@
 # Define constants
 CUSTOM_ZSH="${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
 HOME_ZSH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+NYZ_DIR=$(pwd)
 
 # log, recieve type and message
 log_message() {
     local type=$1
     local message=$2
-    echo "[$type] $(date): $message"
+    echo "[$type] $message"
+    echo "[$type] $(date '+%Y-%m-%d %H:%M:%S'): $message" >> "$NYZ_DIR/.log"
 }
 
 is_os_supported() {
@@ -85,7 +87,7 @@ install_omz() {
 overwrite_zshrc() {
     local dir=$1
     log_message "INF" "Overwriting zshrc ..."
-    cp "$dir/.zshrc" "$HOME/.zshrc"
+    cp "$NYZ_DIR/.zshrc" "$HOME/.zshrc"
 }
 
 add_plugins() {
@@ -101,7 +103,6 @@ add_plugins() {
 # Main section of the script
 main() {
 
-    local dir=$(pwd)
     local repos=(
         "zsh-autosuggestions ${CUSTOM_ZSH}/plugins/zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions"
         "zsh-syntax-highlighting ${CUSTOM_ZSH}/plugins/zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting.git"
@@ -109,6 +110,9 @@ main() {
         # add more plugins here ...
         # format: "name path git_url"
     )
+
+    # Create log file
+    touch ./.log
 
     # change directory to ~
     cd ~
@@ -131,7 +135,7 @@ main() {
         install_omz
     fi
 
-    overwrite_zshrc "$dir"
+    overwrite_zshrc
 
     # Installing plugins
     for repo in "${repos[@]}"; do

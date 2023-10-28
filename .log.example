@@ -1,0 +1,12 @@
+[INF] 2023-10-29 05:03:12: OS is supported
+[INF] 2023-10-29 05:03:12: zsh is installed
+[INF] 2023-10-29 05:03:12: Proceeding with OSTYPE detection
+[INF] 2023-10-29 05:03:12: OSTYPE was detected as linux-gnu
+[INF] 2023-10-29 05:03:12: oh-my-zsh is installed
+[INF] 2023-10-29 05:03:12: Overwriting zshrc ...
+[INF] 2023-10-29 05:03:12: ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions exists
+[INF] 2023-10-29 05:03:12: zsh-autosuggestions already exists in ~/.zshrc
+[INF] 2023-10-29 05:03:12: ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting exists
+[INF] 2023-10-29 05:03:12: zsh-syntax-highlighting already exists in ~/.zshrc
+[INF] 2023-10-29 05:03:12: /home/ibzzsfw/.oh-my-zsh/custom/themes/powerlevel10k exists
+[INF] 2023-10-29 05:03:12: Restaring zsh ...
