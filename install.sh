@@ -130,7 +130,7 @@ main() {
     overwrite_zshrc "$dir"
 
     log_message "INF" "Restaring zsh ..."
-    zsh
+    source ~/.zshrc
 }
 
 # Call the main function
