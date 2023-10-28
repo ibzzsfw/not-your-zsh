@@ -63,10 +63,12 @@ install_zsh() {
     _log "INF" "Installing zsh ..."
     if [[ "$OSTYPE" == "darwin"* ]]; then
         _log "INF" "macOS detected"
-        brew install zsh
+        brew install zsh &
+        wait
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         _log "INF" "linux detected"
-        sudo apt install zsh
+        sudo apt install zsh &
+        wait
     fi
 }
 
