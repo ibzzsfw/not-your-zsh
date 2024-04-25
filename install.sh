@@ -10,7 +10,7 @@ _log() {
     local type=$1
     local message=$2
     echo "[$type] $message"
-    echo "[$type] $(date '+%Y-%m-%d %H:%M:%S'): $message" >> "$NYZ_DIR/.log"
+    echo "[$type] $(date '+%Y-%m-%d %H:%M:%S'): $message" >>"$NYZ_DIR/.log"
 }
 
 is_os_supported() {
@@ -31,7 +31,8 @@ clone_if_not_exists() {
         return 0
     fi
     _log "INF" "Cloning for $dir"
-    git clone $repo_url $dir
+    git clone $repo_url $dir &
+    wait
 }
 
 # Check if zsh is installed
@@ -83,7 +84,8 @@ is_omz_installed() {
 
 install_omz() {
     _log "INF" "Installing oh-my-zsh ..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" &
+    wait
 }
 
 zshrc_exsits() {
